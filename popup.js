@@ -99,6 +99,13 @@ function keyupHandler(e) {
 }
 
 function main() {
+  document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var tab_list = document.getElementById("tab_list");
+    if (tab_list.hasChildNodes()) {
+      select_nth_result(1);
+    }
+  });
 }
 
 
