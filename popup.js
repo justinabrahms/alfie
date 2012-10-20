@@ -29,11 +29,13 @@ function get_tab_id_from_elem(elem) {
 }
 
 function display_tabs_found(tabs) {
+  var tab_list = document.getElementById("tab_list");
+  var errors = document.getElementById("errors");
   if (tabs.length == 0) {
-    var errors = document.getElementById("errors");
     errors.innerHTML = "<li>Sorry. None found.</li>";
+    tab_list.innerHTML = "";
   } else {
-    var ol = document.getElementById("tab_list");
+    errors.innerHTML = "";
     var lis = "";
     for (var i = 0; i < tabs.length; i++) {
       if (i < 10) {
@@ -44,7 +46,7 @@ function display_tabs_found(tabs) {
       }
     }
 
-    ol.innerHTML = lis;
+    tab_list.innerHTML = lis;
 
     var els = document.querySelectorAll('a')
     for (var j = 0; j < els.length; j++) {
@@ -65,11 +67,7 @@ function query_for_tabs(search_term) {
         tab_result.push(tab);
       }
     }
-    if (tab_result.length == 1) {
-      switch_to_tab(tab_result[0].id);
-    } else {
-      display_tabs_found(tab_result);
-    }
+    display_tabs_found(tab_result);
   });
 }
 
@@ -88,6 +86,8 @@ function keypressHandler(e) {
     select_nth_result(e.keyCode - 48); // send along the number pressed.
   } else {
     console.log("Not quite the right keypress. Ctrl: %o, keyCode: %o", ctrlPressed, e.keyCode);
+    var elem = document.querySelector('input')
+    query_for_tabs(elem.value);
   }
 }
 
@@ -99,12 +99,6 @@ function keyupHandler(e) {
 }
 
 function main() {
-  document.querySelector('button').addEventListener('click', function(e) {
-    e.preventDefault();
-    resetPrevious();
-    var elem = document.querySelector('input')
-    query_for_tabs(elem.value);
-  });
 }
 
 
