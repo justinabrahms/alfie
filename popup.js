@@ -28,11 +28,20 @@ function get_tab_id_from_elem(elem) {
   return parseInt(elem.attributes["tab_id"].nodeValue)
 }
 
+function get_search_term() {
+  var elem = document.querySelector('input');
+  return elem.value;
+}
+
 function display_tabs_found(tabs) {
   var tab_list = document.getElementById("tab_list");
   var errors = document.getElementById("errors");
   if (tabs.length == 0) {
-    errors.innerHTML = "<li>Sorry. None found.</li>";
+    if (get_search_term() === "") {
+      errors.innerHTML = "";
+    } else {
+      errors.innerHTML = "<li>Sorry. None found.</li>";
+    }
     tab_list.innerHTML = "";
   } else {
     errors.innerHTML = "";
@@ -102,8 +111,7 @@ function keyupHandler(e) {
     ctrlPressed = false;
     console.log("ctrl released");
   }
-  var elem = document.querySelector('input');
-  query_for_tabs(elem.value);
+  query_for_tabs(get_search_term());
 }
 
 function main() {
