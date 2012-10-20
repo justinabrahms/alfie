@@ -40,7 +40,7 @@ function display_tabs_found(tabs) {
     for (var i = 0; i < tabs.length; i++) {
       if (i < 10) {
         lis += '<li><a href="#" tab_id="' + tabs[i].id + '">'
-             + tabs[i].title + '</a></li>';
+             + tabs[i].label + '</a></li>';
       } else if (i == 10) {
         lis += "<li>There are a total of " + tabs.length + ", but you only get 10.";
       }
@@ -57,13 +57,21 @@ function display_tabs_found(tabs) {
 
 function query_for_tabs(search_term) {
   var tab_result = [];
+  if (search_term === "") {
+    display_tabs_found(tab_result);
+    return;
+  }
+  var search_term_escaped = search_term.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
   chrome.tabs.query({}, function(tab_arr) {
     for (var i = 0; i < tab_arr.length; i++) {
       var tab = tab_arr[i];
-      var reg = new RegExp(".*" + search_term + ".*", "i");
+      var reg = new RegExp(".*" + search_term_escaped + ".*", "i");
       console.log("Looking for %o", reg);
       if (tab.title.search(reg) != -1 || tab.url.search(reg) != -1) {
         console.log("Matches: %o", tab);
+        tab.label = tab.title.replace(new RegExp(
+          "(?![^&;]+;)(?!<[^<>]*)(" + search_term_escaped +
+          ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<em>$1</em>");
         tab_result.push(tab);
       }
     }
@@ -86,8 +94,6 @@ function keypressHandler(e) {
     select_nth_result(e.keyCode - 48); // send along the number pressed.
   } else {
     console.log("Not quite the right keypress. Ctrl: %o, keyCode: %o", ctrlPressed, e.keyCode);
-    var elem = document.querySelector('input')
-    query_for_tabs(elem.value);
   }
 }
 
@@ -96,6 +102,8 @@ function keyupHandler(e) {
     ctrlPressed = false;
     console.log("ctrl released");
   }
+  var elem = document.querySelector('input');
+  query_for_tabs(elem.value);
 }
 
 function main() {
