@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Alfie</title>
+    <style>
+      /** Icon is from http://findicons.com/search/butler **/
+      body {
+        min-width:350px;
+        overflow-x:hidden;
+      }
+      input { 
+        width: 270px; 
+      }
+      button { 
+        margin-left: 10px; 
+      }
+      ul#errors { 
+        list-style: none;
+        font-style: italic;
+        text-align: center;
+        padding: 0px;
+        margin: 30px 0;
+      }
+      ul#errors li {
+        padding: 0px;
+        margin: 0px;
+      }
+      ol#tab_list {}
+      
+      ol#tab_list li {
+        padding: 5px 0;
+      }
+      
+      ol#tab_list li a {
+        color: #222;
+      }
+    </style>
+    <form>
+      <table width="100%" border=0>
+        <tr>
+          <td><input type="text" placeholder="What are you trying to find?" /></td>
+          <td><button>Search</button></td>
+        </tr>
+      </table>
+    </form>
+
+    <ul id="errors">
+    </ul>
+    <ol id="tab_list">
+    </ol>
+    <div id="help"><p></p></div>
+    <!-- JavaScript and HTML must be in separate files for security. -->
+    <script src="popup.js"></script>
+  </head>
+  <body>
+  </body>
+</html>
