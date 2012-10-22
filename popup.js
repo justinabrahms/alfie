@@ -1,5 +1,11 @@
 // TODO(justinlilly): xsrf?
 
+// Escape string so it can be used in regex search
+// taken from http://stackoverflow.com/a/3561711/238628
+RegExp.escape = function(s) {
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 // Global state about whether the ctrl key is pressed. Hacky, but I
 // didn't want to bother with an external library. Will probably do
 // that if folks like it.
@@ -70,17 +76,20 @@ function query_for_tabs(search_term) {
     display_tabs_found(tab_result);
     return;
   }
-  var search_term_escaped = search_term.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+  var search_term_escaped = RegExp.escape(search_term);
   chrome.tabs.query({}, function(tab_arr) {
     for (var i = 0; i < tab_arr.length; i++) {
       var tab = tab_arr[i];
-      var reg = new RegExp(".*" + search_term_escaped + ".*", "i");
-      console.log("Looking for %o", reg);
-      if (tab.title.search(reg) != -1 || tab.url.search(reg) != -1) {
+      console.log("Looking for %o", search_term_escaped);
+      if (tab.title.search(search_term_escaped) != -1 ||
+          tab.url.search(search_term_escaped) != -1) {
         console.log("Matches: %o", tab);
-        tab.label = tab.title.replace(new RegExp(
-          "(?![^&;]+;)(?!<[^<>]*)(" + search_term_escaped +
-          ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<em>$1</em>");
+        // wrap search term in <em> tag:
+        // "Inbox (1)".replace(new RegExp("(" + "inbox" + ")", "gi"), '<em>$1</em>')
+        // "<em>Inbox</em> (1)"
+        tab.label = tab.title.replace(
+          new RegExp("(" + search_term_escaped + ")", "gi"),
+          '<em>$1</em>');
         tab_result.push(tab);
       }
     }
