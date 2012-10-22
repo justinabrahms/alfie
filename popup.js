@@ -96,8 +96,9 @@ function query_for_tabs(search_term) {
     for (var i = 0; i < tab_arr.length; i++) {
       var tab = tab_arr[i];
       console.log("Looking for %o", search_term_escaped);
-      if (tab.title.search(search_term_escaped) != -1 ||
-          tab.url.search(search_term_escaped) != -1) {
+      var search_term_re = new RegExp(search_term_escaped, "i");
+      if (tab.title.search(search_term_re) != -1 ||
+          tab.url.search(search_term_re) != -1) {
         console.log("Matches: %o", tab);
         // wrap search term in <em> tag:
         // "Inbox (1)".replace(new RegExp("(" + "inbox" + ")", "gi"), '<em>$1</em>')
