@@ -9,7 +9,7 @@
         overflow-x:hidden;
       }
       input { 
-        width: 270px; 
+        width: 100%;
       }
       button { 
         margin-left: 10px; 
@@ -26,11 +26,15 @@
         margin: 0px;
       }
       ol#tab_list {}
-      
+
       ol#tab_list li {
         padding: 5px 0;
       }
-      
+      ol#tab_list li em {
+        background-color: #ffff00;
+        font-style:normal;
+      }
+
       ol#tab_list li a {
         color: #222;
       }
@@ -38,8 +42,7 @@
     <form>
       <table width="100%" border=0>
         <tr>
-          <td><input type="text" placeholder="What are you trying to find?" /></td>
-          <td><button>Search</button></td>
+          <td><input type="text" id="input" placeholder="What are you trying to find?" /></td>
         </tr>
       </table>
     </form>
