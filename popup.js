@@ -10,6 +10,9 @@ RegExp.escape = function(s) {
 // didn't want to bother with an external library. Will probably do
 // that if folks like it.
 var ctrlPressed = false;
+var tab_list_el = document.getElementById("tab_list");
+var errors_el = document.getElementById("errors");
+var input_el = document.getElementById("input");
 
 function switch_to_tab(tab_id) {
   chrome.tabs.update(tab_id, {'active': true});
@@ -35,38 +38,50 @@ function get_tab_id_from_elem(elem) {
 }
 
 function get_search_term() {
-  var elem = document.querySelector('input');
-  return elem.value;
+  return input_el.value;
+}
+
+function display_no_results(search_term) {
+  errors_el.innerHTML = "<li>Sorry. None found.</li>";
+  tab_list_el.innerHTML = "";
+}
+
+function display_empty_results(term) {
+  errors_el.innerHTML = "";
+  tab_list_el.innerHTML = "";
+}
+
+function display_results(tabs, search_term) {
+  errors_el.innerHTML = "";
+
+  var lis = "";
+  for (var i = 0; i < tabs.length; i++) {
+    if (i < 10) {
+      lis += '<li><a href="#" tab_id="' + tabs[i].id + '">'
+           + tabs[i].label + '</a></li>';
+    } else if (i == 10) {
+      lis += "<li>There are a total of " + tabs.length + ", but you only get 10.";
+    }
+  }
+
+  tab_list_el.innerHTML = lis;
+
+  var els = document.querySelectorAll('a')
+  for (var j = 0; j < els.length; j++) {
+    els[j].addEventListener('click', clickHandler);
+  }
 }
 
 function display_tabs_found(tabs) {
-  var tab_list = document.getElementById("tab_list");
-  var errors = document.getElementById("errors");
-  if (tabs.length == 0) {
-    if (get_search_term() === "") {
-      errors.innerHTML = "";
+  var search_term = get_search_term();
+  if (tabs.length === 0) {
+    if (search_term === "") {
+      display_empty_results();
     } else {
-      errors.innerHTML = "<li>Sorry. None found.</li>";
+      display_no_results(search_term);
     }
-    tab_list.innerHTML = "";
   } else {
-    errors.innerHTML = "";
-    var lis = "";
-    for (var i = 0; i < tabs.length; i++) {
-      if (i < 10) {
-        lis += '<li><a href="#" tab_id="' + tabs[i].id + '">'
-             + tabs[i].label + '</a></li>';
-      } else if (i == 10) {
-        lis += "<li>There are a total of " + tabs.length + ", but you only get 10.";
-      }
-    }
-
-    tab_list.innerHTML = lis;
-
-    var els = document.querySelectorAll('a')
-    for (var j = 0; j < els.length; j++) {
-      els[j].addEventListener('click', clickHandler);
-    }
+    display_results(tabs, search_term);
   }
 }
 
@@ -95,11 +110,6 @@ function query_for_tabs(search_term) {
     }
     display_tabs_found(tab_result);
   });
-}
-
-function resetPrevious() {
-  document.getElementById("tab_list").innerHTML = "";
-  document.getElementById("errors").innerHTML = "";
 }
 
 function keypressHandler(e) {
